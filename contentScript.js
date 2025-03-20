@@ -12,13 +12,14 @@
   };
 
   const addNewBookmarkEventHandler = async () => {
+    youtubePlayer.pause();
+
     const currentTime = youtubePlayer.currentTime;
     const newBookmark = {
       time: currentTime,
       desc: "Bookmark at " + getTime(currentTime),
     };
     
-    console.log(currentVideo)
     currentVideoBookmarks = await fetchBookmarks();
     chrome.storage.sync.set({
       [currentVideo]: JSON.stringify([...currentVideoBookmarks, newBookmark].sort((a, b) => a.time - b.time))
