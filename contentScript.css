@@ -1,0 +1,12 @@
+.screenshot-btn {
+    padding: 0 10px 10px 0 !important;
+    width: 24px !important;
+    height: 24px !important;
+    opacity: 0.8;
+    transition: 0.2s;
+}
+
+.screenshot-btn:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}

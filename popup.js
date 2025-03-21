@@ -25,9 +25,16 @@ const viewBookmarks = (currentBookmarks=[]) => {
   const bookmarksElement = document.getElementById("bookmarks");
   bookmarksElement.innerHTML = "";
 
+  // TODO: For the time being, we are only showing non repeating bookmarks
+  // TODO: This should be changed to set function to set only the single time bookmark
   if (currentBookmarks.length > 0) {
+    let lastBookmarkTime = -1;
     for (let i = 0; i < currentBookmarks.length; i++) {
+      if (currentBookmarks[i].time === lastBookmarkTime) 
+        continue;
+      
       const bookmark = currentBookmarks[i];
+      lastBookmarkTime = bookmark.time;
       addNewBookmark(bookmarksElement, bookmark);
     }
   } else {

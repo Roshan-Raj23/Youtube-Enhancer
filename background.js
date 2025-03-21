@@ -11,18 +11,13 @@ chrome.tabs.onUpdated.addListener((tabId, _ , tab) => {
   }
 });
 
-// chrome.runtime.onMessage.addListener((request , sendResponse) => {
-//   if (request.action === "setData") {
-//       chrome.storage.local.set({ myData: request.data }, () => {
-//           sendResponse({ status: "success", message: "Data saved!" });
-//       });
-//       return true; // Keeps sendResponse active
-//   }
-
-//   if (request.action === "getData") {
-//       chrome.storage.local.get(["myData"], (result) => {
-//           sendResponse({ status: "success", data: result.myData || "No data found!" });
-//       });
-//       return true;
-//   }
-// });
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === "saveImage") {
+      chrome.downloads.download({
+        url: request.imageURL,
+        filename: "youtube_frame.png",
+        saveAs: true
+      });
+      sendResponse({ status: "success" });
+  }
+});
