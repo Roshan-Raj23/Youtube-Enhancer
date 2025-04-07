@@ -1,7 +1,20 @@
 (() => {
   let youtubeLeftControls, youtubePlayer, youtubeRightControls;
   let currentVideo = "";
+  let currentVideoPaused = false , currentVideoAutoPause = true;
   let currentVideoBookmarks = [];
+
+  document.addEventListener("visibilitychange", () => {
+    if (!currentVideoAutoPause) return;
+
+    if (document.visibilityState === "hidden") {
+      currentVideoPaused = youtubePlayer.paused;
+      youtubePlayer.pause();
+    } else if (document.visibilityState === "visible") {
+      if (currentVideoPaused == false) 
+        youtubePlayer.play();
+    }
+  });
 
   const fetchBookmarks = () => {
     return new Promise((resolve) => {
@@ -53,36 +66,57 @@
     const bookmarkBtnExists = document.getElementsByClassName("bookmark-btn")[0];
 
     if (!bookmarkBtnExists) {
-      const bookmarkBtn = document.createElement("img");
-
-      bookmarkBtn.src = chrome.runtime.getURL("assets/bookmark.png");
-      bookmarkBtn.className = "ytp-button " + "bookmark-btn";
-      bookmarkBtn.title = "Click to bookmark current timestamp";
-
-      youtubeLeftControls = document.getElementsByClassName("ytp-left-controls")[0];
       youtubePlayer = document.getElementsByClassName('video-stream')[0];
-
-      youtubeLeftControls.appendChild(bookmarkBtn);
-      bookmarkBtn.addEventListener("click", addNewBookmarkEventHandler);
-
-
-      // TODO: center this img
-      const screenshotBtn = document.createElement("img");
-      // const screenshotBtnImg = document.createElement("img");
+      youtubeLeftControls = document.getElementsByClassName("ytp-left-controls")[0];
+      youtubeRightControls = document.getElementsByClassName("ytp-right-controls")[0];
 
       
+      const bookmarkBtn = document.createElement("img");
+      bookmarkBtn.src = chrome.runtime.getURL("assets/bookmark.png");
+      bookmarkBtn.className = "ytp-button bookmark-btn";
+      bookmarkBtn.title = "Click to bookmark current timestamp";
 
-      screenshotBtn.src = chrome.runtime.getURL("assets/screenshot.png");
-      // screenshotBtnImg.className = "ytp-button";
-      screenshotBtn.className = "ytp-button " + "screenshot-btn";
+
+      const autoPauseBtn = document.createElement("div");
+      autoPauseBtn.className = "ytp-button autoPauseBtn-div";
+      autoPauseBtn.title = "Click to turn off autopause";
+
+      const autoPauseBtnLabel = document.createElement("label");
+      autoPauseBtnLabel.innerHTML = 
+        `<input type="checkbox" id="autoPauseToggle" checked="checked">
+          <span class="slider"></span>`;
+      autoPauseBtnLabel.className = "switch";
+      autoPauseBtn.appendChild(autoPauseBtnLabel);
+
+      // youtubeLeftControls.appendChild(bookmarkBtn);
+      // youtubeLeftControls.appendChild(autoPauseBtn);
+
+      const screenshotBtn = document.createElement("div");
+      const screenshotBtnImg = document.createElement("img");
+
+      screenshotBtn.className = "ytp-button screenshot-btn-div";
+      screenshotBtnImg.src = chrome.runtime.getURL("assets/screenshot.png");
+      screenshotBtnImg.className = "ytp-button screenshot-btn";
       screenshotBtn.title = "Click to take a screenshot";
-
-      // screenshotBtn.appendChild(screenshotBtnImg)
-
-
-      youtubeRightControls = document.getElementsByClassName("ytp-right-controls")[0];
+      screenshotBtn.appendChild(screenshotBtnImg);
+      
+      
+      youtubeRightControls.insertBefore(bookmarkBtn, youtubeRightControls.firstChild);
       youtubeRightControls.insertBefore(screenshotBtn, youtubeRightControls.firstChild);
+      youtubeRightControls.insertBefore(autoPauseBtn, youtubeRightControls.firstChild);
+      
+      
       screenshotBtn.addEventListener("click", saveScreenShotEventHandler);
+      bookmarkBtn.addEventListener("click", addNewBookmarkEventHandler);
+      document.getElementById("autoPauseToggle").addEventListener("click", () => {
+        currentVideoAutoPause = !currentVideoAutoPause;
+        if (currentVideoAutoPause) {
+          autoPauseBtn.title = "Click to turn off autopause";
+        } else {
+          autoPauseBtn.title = "Click to turn on autopause";
+        }
+      });
+
     }
   };
 
@@ -115,8 +149,8 @@
       newVideoLoaded();
     } else if (type === "PLAY") {
       youtubePlayer.currentTime = value;
-      if (youtubePlayer.paused) 
-        youtubePlayer.play();
+      // if (youtubePlayer.paused) 
+      //   youtubePlayer.play();
     } else if ( type === "DELETE") {
       currentVideoBookmarks = currentVideoBookmarks.filter((b) => b.time != value);
       chrome.storage.sync.set({ [currentVideo]: JSON.stringify(currentVideoBookmarks) });

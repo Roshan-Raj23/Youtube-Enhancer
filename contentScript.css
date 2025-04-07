@@ -1,12 +1,75 @@
+:root {
+    --slider-label-width: 40px;
+    --slider-label-height: 20px;
+}
+
+.screenshot-btn-div {
+    position: relative !important;
+    text-align: center !important;
+}
+
 .screenshot-btn {
-    padding: 0 10px 10px 0 !important;
     width: 24px !important;
     height: 24px !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
     opacity: 0.8;
     transition: 0.2s;
 }
 
 .screenshot-btn:hover {
     opacity: 1;
-    transform: scale(1.1);
+    transform: translate(-50%, -50%) scale(1.1) !important;
+}
+
+.autoPauseBtn-div {
+    position: relative !important;
+}
+
+.switch {
+    position: absolute;
+    display: inline-block;
+    width: var(--slider-label-width);
+    height: var(--slider-label-height);
+    margin: auto !important;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0;
+    right: 0; bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: calc(var(--slider-label-height) - 6px);
+    width: calc(var(--slider-label-height) - 6px);
+    left: 3px; bottom: 3px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #4CAF50;
+}
+
+input:checked + .slider:before {
+    transform: translateX(calc(var(--slider-label-width) - var(--slider-label-height)));
 }
