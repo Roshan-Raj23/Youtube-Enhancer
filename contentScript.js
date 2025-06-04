@@ -62,6 +62,31 @@
     //   alert("Failed to save screenshot!");
   };
 
+  const fetchDownloadURL = async () => {
+    try {
+      const response = await fetch('https://youtube-downloader-q3fi.onrender.com/' + currentVideo);
+      // const response = await fetch('http://127.0.0.1:5000/' + currentVideo);
+      if (!response.ok) 
+          throw new Error('Network response was not ok');
+      
+      const data = await response.json();
+      return data.message;
+    } catch (error) {
+      console.error('CHECK THIS : ', error);
+    }
+  }
+
+  const downloadEventHandler = async () => {
+    const downloadVideoURL = await fetchDownloadURL();
+    
+    const a = document.createElement('a');
+    a.href = downloadVideoURL;
+    // a.download = "video.mp4"; 
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+
   const newVideoLoaded = async () => {
     const bookmarkBtnExists = document.getElementsByClassName("bookmark-btn")[0];
 
@@ -100,13 +125,25 @@
       screenshotBtn.title = "Click to take a screenshot";
       screenshotBtn.appendChild(screenshotBtnImg);
       
+
+      const downloadBtn = document.createElement("div");
+      const downloadBtnImg = document.createElement("img");
+
+      downloadBtn.className = "ytp-button screenshot-btn-div";
+      downloadBtnImg.src = chrome.runtime.getURL("assets/download.png");
+      downloadBtnImg.className = "ytp-button screenshot-btn";
+      downloadBtn.title = "Click to take a screenshot";
+      downloadBtn.appendChild(downloadBtnImg);
       
+      
+      
+      youtubeRightControls.insertBefore(downloadBtn, youtubeRightControls.firstChild);
       youtubeRightControls.insertBefore(bookmarkBtn, youtubeRightControls.firstChild);
       youtubeRightControls.insertBefore(screenshotBtn, youtubeRightControls.firstChild);
       youtubeRightControls.insertBefore(autoPauseBtn, youtubeRightControls.firstChild);
       
-      
       screenshotBtn.addEventListener("click", saveScreenShotEventHandler);
+      downloadBtn.addEventListener("click", downloadEventHandler);
       bookmarkBtn.addEventListener("click", addNewBookmarkEventHandler);
       document.getElementById("autoPauseToggle").addEventListener("click", () => {
         currentVideoAutoPause = !currentVideoAutoPause;
