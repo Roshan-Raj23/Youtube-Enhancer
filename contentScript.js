@@ -71,8 +71,19 @@
       
       const data = await response.json();
       return data.message;
-    } catch (error) {
-      console.error('CHECK THIS : ', error);
+    } catch (e) {
+      try {
+        console.log("We are here after the failed api call ");
+        console.log("This is the current video : " , currentVideo);
+        const response = await fetch('http://127.0.0.1:5000/' + currentVideo);
+        if (!response.ok) 
+            throw new Error('Network response was not ok');
+        
+        const data = await response.json();
+        return data.message;
+      } catch (error) {
+        console.error('CHECK THIS : ', error);
+      }
     }
   }
 
@@ -119,7 +130,7 @@
       const screenshotBtn = document.createElement("div");
       const screenshotBtnImg = document.createElement("img");
 
-      screenshotBtn.className = "ytp-button screenshot-btn-div";
+      screenshotBtn.className = "ytp-button screenshot-btn-div !bg-blue-500";
       screenshotBtnImg.src = chrome.runtime.getURL("assets/screenshot.png");
       screenshotBtnImg.className = "ytp-button screenshot-btn";
       screenshotBtn.title = "Click to take a screenshot";

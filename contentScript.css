@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 :root {
     --slider-label-width: 40px;
     --slider-label-height: 20px;
@@ -10,6 +12,7 @@
 }
 
 .screenshot-btn {
+    /* background-color: blue !important; */
     width: 24px !important;
     height: 24px !important;
     position: absolute !important;
