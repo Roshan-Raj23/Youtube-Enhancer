@@ -1,3 +1,10 @@
+
+:root {
+    --slider-label-width: 30px;
+    --slider-label-height: 16px;
+    --slider-ball-margin: 2px;
+}
+
 .container {
   width: 280px;
   color: #314d3e;
@@ -50,4 +57,91 @@
 .bookmark-controls {
   flex: auto;
   text-align: right;
+}
+
+#bookmarks-text-div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.settings-btn {
+  margin-right: 8px;
+  transition: transform 0.5s ease;
+}
+
+.btn {
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.rotatedClock {
+  transform: rotateZ(60deg)
+}
+
+.rotatedAntiClock {
+  transform: rotate(0deg);
+}
+
+.default-autopause {
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+  margin: 5px 0 15px 0;
+}
+
+.change-vis {
+  display: none;
+}
+
+.autoPauseBtn-div {
+  position: relative;
+}
+
+.switch {
+  position: absolute;
+  display: inline-block;
+  width: var(--slider-label-width);
+  height: var(--slider-label-height);
+  margin: auto;
+  top: 50%;
+  left: 50%;
+  transform: translate(10%, -50%);
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0;
+  right: 0; bottom: 0;
+  background-color: rgb(95, 90, 90);
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: calc(var(--slider-label-height) - 2*var(--slider-ball-margin));
+  width: calc(var(--slider-label-height) - 2*var(--slider-ball-margin));
+  left: var(--slider-ball-margin);
+  bottom: var(--slider-ball-margin);
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #4cafaa;
+}
+
+input:checked + .slider:before {
+  transform: translateX(calc(var(--slider-label-width) - var(--slider-label-height)));
 }

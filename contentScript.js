@@ -1,8 +1,16 @@
-(() => {
+(async () => {
   let youtubeLeftControls, youtubePlayer, youtubeRightControls;
   let currentVideo = "";
   let currentVideoPaused = false , currentVideoAutoPause = true;
   let currentVideoBookmarks = [];
+
+  // 1 -> true , -1 -> false
+  const data = await chrome.storage.sync.get(["autoPause"]);
+  if (data.autoPause) {
+    currentVideoAutoPause = (data.autoPause == 1);
+  } else {
+    await chrome.storage.sync.set({ ["autoPause"]: 1 });
+  }
 
   document.addEventListener("visibilitychange", () => {
     if (!currentVideoAutoPause) return;
@@ -73,8 +81,8 @@
       return data.message;
     } catch (e) {
       try {
-        console.log("We are here after the failed api call ");
-        console.log("This is the current video : " , currentVideo);
+        // console.log("We are here after the failed api call ");
+        // console.log("This is the current video : " , currentVideo);
         const response = await fetch('http://127.0.0.1:5000/' + currentVideo);
         if (!response.ok) 
             throw new Error('Network response was not ok');
@@ -119,7 +127,7 @@
 
       const autoPauseBtnLabel = document.createElement("label");
       autoPauseBtnLabel.innerHTML = 
-        `<input type="checkbox" id="autoPauseToggle" checked="checked">
+        `<input type="checkbox" id="autoPauseToggle" ${currentVideoAutoPause ? 'checked' : ''}>
           <span class="slider"></span>`;
       autoPauseBtnLabel.className = "switch";
       autoPauseBtn.appendChild(autoPauseBtnLabel);

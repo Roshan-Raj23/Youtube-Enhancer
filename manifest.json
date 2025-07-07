@@ -30,6 +30,7 @@
         "assets/download.png",
         "assets/play.png",
         "assets/save.png",
+        "assets/settings.png",
         "assets/screenshot.png"
       ],
       "matches": ["https://*.youtube.com/*"]

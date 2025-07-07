@@ -98,3 +98,44 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
+const button = document.getElementsByClassName('btn')[0];
+const rotate = document.getElementsByClassName('settings-btn')[0];
+const autoButton = document.getElementById("autoPauseToggle")
+
+button.addEventListener('click', () => {
+  const settings = document.getElementsByClassName("change-vis")[0];
+
+  if (settings.style.display === 'block') {
+    settings.style.display = 'none';
+    rotate.classList.add('rotatedAntiClock');
+    rotate.classList.remove('rotatedClock');
+  } else {
+    settings.style.display = 'block';
+    rotate.classList.remove('rotatedAntiClock');
+    rotate.classList.add('rotatedClock');
+  }
+});
+
+let autoPause = true;
+const data = await chrome.storage.sync.get(["autoPause"]);
+if (data.autoPause) {
+  autoPause = (data.autoPause == 1);
+} else {
+  await chrome.storage.sync.set({ ["autoPause"]: 1 });
+}
+
+
+autoButton.checked = autoPause
+
+autoButton.addEventListener("click", async () => {
+  autoPause = !autoPause;
+  autoButton.checked = autoPause
+  if (autoPause) {
+    await chrome.storage.sync.set({ ["autoPause"]: 1 });
+    autoButton.title = "Click to turn off autopause";
+  } else {
+    await chrome.storage.sync.set({ ["autoPause"]: -1 });
+    autoButton.title = "Click to turn on autopause";
+  }
+});
+

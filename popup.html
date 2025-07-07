@@ -4,9 +4,28 @@
 
 <div class="container">
   <div>
-    <div class="title">Your bookmarks for this video</div>
+    <div id="bookmarks-text-div">
+      <div class="title">Your bookmarks for this video</div>
+      <button class="btn" onclick="openSettings()">
+        <img src="/assets/settings.png" alt="settings" width="20px" class="settings-btn">
+      </button>
+    </div>
+    <div class="change-vis">
+      <div class="default-autopause">
+        Default autopause setting : 
+
+        <div class="autoPauseBtn-div">
+          <label class="switch">
+            <input type="checkbox" id="autoPauseToggle" checked>
+            <span class="slider"></span>
+          </label>
+
+        </div>
+      </div>
+    </div>
 
     <div class="bookmarks" id="bookmarks"></div>
+
 
     <!-- <div id="check"></div> -->
   </div>
