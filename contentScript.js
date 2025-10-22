@@ -2,6 +2,7 @@
   let youtubeLeftControls, youtubePlayer, youtubeRightControls;
   let currentVideo = "";
   let currentVideoPaused = false , currentVideoAutoPause = true;
+  let needToShowDislike = true;
   let currentVideoBookmarks = [];
 
   // 1 -> true , -1 -> false
@@ -10,6 +11,13 @@
     currentVideoAutoPause = (data.autoPause == 1);
   } else {
     await chrome.storage.sync.set({ ["autoPause"]: 1 });
+  }
+
+  const data2 = await chrome.storage.sync.get(["dislikeNumberPreference"]);
+  if (data2.dislikeNumberPreference) {
+    needToShowDislike = (data2.dislikeNumberPreference == 1);
+  } else {
+    await chrome.storage.sync.set({ ["dislikeNumberPreference"]: 1 });
   }
 
   document.addEventListener("visibilitychange", () => {
@@ -176,6 +184,52 @@
     }
   };
 
+  const parseInFormat = (currentCount) => {
+  if (currentCount < 1000) {
+      return currentCount.toString();
+    }
+
+    const suffixes = ["", "K", "M", "B", "T"];
+    const tier = Math.floor(Math.log10(currentCount) / 3);
+
+    const suffix = suffixes[tier];
+    const scale = Math.pow(10, tier * 3);
+    // const scaled = currentCount / scale;
+    const scaled = Math.floor((currentCount / scale) * 10) / 10;
+    
+    let formatted = scaled.toFixed(scaled % 1 === 0 ? 0 : 1)
+    
+    if (tier == 1 && currentCount >= 10000)
+      formatted = parseInt(formatted)
+      // formatted -= formatted%1;
+
+    return formatted + suffix;
+  }
+
+  const addDislikesCount = async (videoID) => {
+    if (!needToShowDislike)
+      return;
+
+    let noOfDislikes = await getYouTubeDislikes(videoID);
+    noOfDislikes = parseInFormat(noOfDislikes)
+
+    const dislikeButton = document.getElementsByClassName('ytDislikeButtonViewModelHost')[1]
+    const toggleButtons = dislikeButton.getElementsByTagName('button-view-model')[0];
+    const finalButton = toggleButtons.children[0]
+    finalButton.classList.replace('yt-spec-button-shape-next--icon-button' , 'yt-spec-button-shape-next--icon-leading')
+
+    if (finalButton.querySelector('.yt-spec-button-shape-next__button-text-content'))
+      return;
+
+    const dislikeCountDiv = document.createElement('div');
+    dislikeCountDiv.className = 'yt-spec-button-shape-next__button-text-content';
+    dislikeCountDiv.textContent = noOfDislikes;
+
+    let iconDiv = finalButton.querySelector('.yt-spec-button-shape-next__icon');
+    if (iconDiv) {
+      iconDiv.after(dislikeCountDiv);
+    }
+  }
 
   const captureFrame = () => {
     if (!youtubePlayer) {
@@ -196,6 +250,19 @@
     chrome.runtime.sendMessage({ action: "saveImage", imageURL: imageURL }, (response) => {});
   }
   
+  const getYouTubeDislikes = async (videoId) => {
+    try{
+      const apiUrl = `https://returnyoutubedislikeapi.com/votes?videoId=${videoId}`;
+      const response = await fetch(apiUrl);
+      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+      const data = await response.json();
+      return data.dislikes;
+    } catch (error) {
+      console.error("Failed to fetch dislikes:", error);
+      return -1;
+    }
+  }
 
   chrome.runtime.onMessage.addListener((obj, sender, response) => {
     const { type, value, videoId } = obj;
@@ -203,6 +270,7 @@
     if (type === "NEW") {
       currentVideo = videoId;
       newVideoLoaded();
+      addDislikesCount(videoId);
     } else if (type === "PLAY") {
       youtubePlayer.currentTime = value;
       // if (youtubePlayer.paused) 

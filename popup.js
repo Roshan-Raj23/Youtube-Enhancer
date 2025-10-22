@@ -101,6 +101,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 const button = document.getElementsByClassName('btn')[0];
 const rotate = document.getElementsByClassName('settings-btn')[0];
 const autoButton = document.getElementById("autoPauseToggle")
+const dislikeButton = document.getElementById("dislikeNumberToggle")
 
 button.addEventListener('click', () => {
   const settings = document.getElementsByClassName("change-vis")[0];
@@ -136,6 +137,30 @@ autoButton.addEventListener("click", async () => {
   } else {
     await chrome.storage.sync.set({ ["autoPause"]: -1 });
     autoButton.title = "Click to turn on autopause";
+  }
+});
+
+
+let dislikeShow = true;
+const data2 = await chrome.storage.sync.get(["dislikeNumberPreference"]);
+if (data2.dislikeNumberPreference) {
+  dislikeShow = (data2.dislikeNumberPreference == 1);
+} else {
+  await chrome.storage.sync.set({ ["dislikeNumberPreference"]: 1 });
+}
+
+
+dislikeButton.checked = dislikeShow
+
+dislikeButton.addEventListener("click", async () => {
+  dislikeShow = !dislikeShow;
+  dislikeButton.checked = dislikeShow
+  if (dislikeShow) {
+    await chrome.storage.sync.set({ ["dislikeNumberPreference"]: 1 });
+    autoButton.title = "Click to turn off visibility of dislike number";
+  } else {
+    await chrome.storage.sync.set({ ["dislikeNumberPreference"]: -1 });
+    autoButton.title = "Click to turn on visibility of dislike number";
   }
 });
 
