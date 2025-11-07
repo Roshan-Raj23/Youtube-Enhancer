@@ -123,14 +123,23 @@
       youtubeRightControls = document.getElementsByClassName("ytp-right-controls")[0];
 
       
-      const bookmarkBtn = document.createElement("img");
-      bookmarkBtn.src = chrome.runtime.getURL("assets/bookmark.png");
+      const bookmarkBtn = document.createElement('div');
+      const bookmarkBtnImg = document.createElement("img");
+      bookmarkBtnImg.src = chrome.runtime.getURL("assets/bookmark.png");
       bookmarkBtn.className = "ytp-button bookmark-btn";
+      bookmarkBtnImg.className = "ytp-button";
       bookmarkBtn.title = "Click to bookmark current timestamp";
+      bookmarkBtn.appendChild(bookmarkBtnImg)
+
+      // Something that can enhance the interface title (but is not working)
+      // bookmarkBtn.setAttribute("data-tooltip-title", "Click to bookmark current timestamp");
+      // bookmarkBtn.setAttribute("aria-label", "Click to bookmark current timestamp");
 
 
+      const autoPauseBtnWrapper = document.createElement('div')
       const autoPauseBtn = document.createElement("div");
-      autoPauseBtn.className = "ytp-button autoPauseBtn-div";
+      autoPauseBtnWrapper.className = 'ytp-button autoPauseWrapper'
+      autoPauseBtn.className = "autoPauseBtn-div";
       autoPauseBtn.title = "Click to turn off autopause";
 
       const autoPauseBtnLabel = document.createElement("label");
@@ -139,6 +148,7 @@
           <span class="slider"></span>`;
       autoPauseBtnLabel.className = "switch";
       autoPauseBtn.appendChild(autoPauseBtnLabel);
+      autoPauseBtnWrapper.appendChild(autoPauseBtn)
 
       // youtubeLeftControls.appendChild(bookmarkBtn);
       // youtubeLeftControls.appendChild(autoPauseBtn);
@@ -167,7 +177,7 @@
       youtubeRightControls.insertBefore(downloadBtn, youtubeRightControls.firstChild);
       youtubeRightControls.insertBefore(bookmarkBtn, youtubeRightControls.firstChild);
       youtubeRightControls.insertBefore(screenshotBtn, youtubeRightControls.firstChild);
-      youtubeRightControls.insertBefore(autoPauseBtn, youtubeRightControls.firstChild);
+      youtubeRightControls.insertBefore(autoPauseBtnWrapper, youtubeRightControls.firstChild);
       
       screenshotBtn.addEventListener("click", saveScreenShotEventHandler);
       downloadBtn.addEventListener("click", downloadEventHandler);
